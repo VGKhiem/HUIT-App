@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'; img-src * data: blob:;">
+  <title>Thời Khóa Biểu HUIT</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+  <link rel="stylesheet" href="styles.css?v=28">
+</head>
+<body>
+  <!-- Custom Titlebar -->
+  <div class="titlebar">
+    <div class="titlebar-left">
+      <div class="app-icon">🎓</div>
+      
+      <div class="nav-buttons">
+        <button id="btn-back" class="nav-btn" title="Quay lại">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <button id="btn-forward" class="nav-btn" title="Tiến">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+        <button id="btn-refresh" class="nav-btn" title="Làm mới">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+          </svg>
+        </button>
+        <button id="btn-home" class="nav-btn active" title="Trang chủ">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <span>Trang chủ</span>
+        </button>
+        <button id="btn-timetable" class="nav-btn" title="Thời khóa biểu">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <span>Thời Khóa Biểu</span>
+        </button>
+      </div>
+    </div>
+    
+    <div class="titlebar-right">
+      <div id="loading-indicator" class="loading hidden">
+        <div class="spinner"></div>
+      </div>
+      <button id="btn-theme" class="nav-btn theme-toggle" title="Bật/Tắt Dark Mode">
+        <svg id="theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg id="theme-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+      </button>
+      <button id="btn-minimize" class="window-btn" title="Thu nhỏ">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round">
+          <line x1="2" y1="7" x2="12" y2="7"></line>
+        </svg>
+      </button>
+      <button id="btn-close" class="window-btn close" title="Đóng">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round">
+          <line x1="2" y1="2" x2="12" y2="12"></line>
+          <line x1="12" y1="2" x2="2" y2="12"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="url-bar hidden" id="url-bar">
+    <input type="text" id="url-input" placeholder="Nhập URL..." />
+    <button id="btn-go" class="go-btn">Đi</button>
+  </div>
+
+  <!-- Webview Container Dashboard (Used for Login and Dashboard Scraping) -->
+  <div id="webview-wrapper-dashboard" class="webview-container">
+    <webview 
+      id="webview-dashboard" 
+      src="https://sinhvien.huit.edu.vn/dashboard.html"
+      allowpopups
+      nodeintegration="false"
+      webpreferences="contextIsolation=yes,devTools=true"
+      style="width:100%; height:100%;"
+      partition="persist:huit-session"
+    ></webview>
+    
+    <!-- Welcome Overlay (shown while loading) -->
+    <div id="welcome-overlay" class="welcome-overlay">
+      <div class="welcome-content">
+        <div class="welcome-logo">🎓</div>
+        <h1>Thời Khóa Biểu HUIT</h1>
+        <p>Đang tải cổng thông tin sinh viên...</p>
+        <div class="loading-bar">
+          <div class="loading-progress"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Webview Container Timetable (Used for Timetable Scraping) -->
+  <div id="webview-wrapper-timetable" class="webview-container headless">
+    <webview 
+      id="webview-timetable" 
+      src="about:blank"
+      allowpopups
+      nodeintegration="false"
+      webpreferences="contextIsolation=yes,devTools=true"
+      style="width:100%; height:100%;"
+      partition="persist:huit-session"
+    ></webview>
+  </div>
+
+  <!-- Native UI: Login -->
+  <div id="native-login" class="native-container hidden" style="display: flex; align-items: center; justify-content: center; overflow-y: auto;">
+    <div class="native-card login-card" style="max-width: 380px; width: 100%; margin: 15px auto; padding: 20px;">
+      <div style="text-align: center; margin-bottom: 15px;">
+        <div style="font-size: 32px; margin-bottom: 5px;">🎓</div>
+        <h2 style="margin: 0; color: var(--text-primary); font-size: 20px;">ĐĂNG NHẬP HỆ THỐNG</h2>
+        <p style="color: var(--text-secondary); font-size: 13px; margin-top: 5px;">Cổng thông tin sinh viên HUIT</p>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label style="display: block; margin-bottom: 4px; color: var(--text-secondary); font-size: 13px;">Mã sinh viên</label>
+        <input type="text" id="native-username" placeholder="Nhập mã sinh viên" style="width: 100%; padding: 10px 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); outline: none;">
+      </div>
+
+      <div class="form-group" style="margin-bottom: 12px; position: relative;">
+        <label style="display: block; margin-bottom: 4px; color: var(--text-secondary); font-size: 13px;">Mật khẩu</label>
+        <input type="password" id="native-password" placeholder="Nhập mật khẩu" style="width: 100%; padding: 10px 40px 10px 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); outline: none;">
+        <button id="btn-toggle-password" type="button" tabindex="-1" style="position: absolute; right: 10px; top: 31px; background: transparent; border: none; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 2px;">
+          <svg id="icon-pwd-eye" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <svg id="icon-pwd-eye-off" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+            <line x1="1" y1="1" x2="23" y2="23"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 15px; display: flex; align-items: center;">
+        <input type="checkbox" id="native-graduated" class="custom-checkbox">
+        <label for="native-graduated" style="color: var(--text-secondary); font-size: 13px; cursor: pointer; user-select: none;">Đã tốt nghiệp</label>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 25px;">
+        <label style="display: block; margin-bottom: 5px; color: var(--text-secondary); font-size: 13px;">Mã xác nhận</label>
+        <div style="display: flex; align-items: center;">
+          <input type="text" id="native-captcha" placeholder="Nhập mã" style="flex: 1; padding: 10px 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); outline: none; margin-right: 10px;">
+          <div style="height: 38px; display: flex; align-items: center; background: #fff; border-radius: 4px; padding: 2px; margin-right: 2px;">
+             <img id="native-captcha-img" src="" alt="Captcha" style="height: 100%; display: none;">
+          </div>
+          <button id="btn-reload-captcha" title="Làm mới mã" style="background: transparent; border: none; color: var(--text-secondary); padding: 4px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: color 0.2s;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <button id="btn-native-login" style="width: 100%; padding: 12px; background: var(--accent-color, #6c63ff); color: white; border: none; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; transition: opacity 0.2s;">
+        ĐĂNG NHẬP
+      </button>
+    </div>
+  </div>
+
+  <!-- Native UI: Dashboard -->
+  <div id="native-dashboard" class="native-container hidden">
+    <!-- Student Profile -->
+    <div class="native-card student-profile-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 5px; height: 28px;">
+        <h3 class="card-title" style="margin: 0; text-align: left; padding: 0;">THÔNG TIN SINH VIÊN</h3>
+        <button id="toggle-student-info" title="Ẩn/Hiển thị" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 4px; transition: color 0.2s;">
+          <svg id="icon-eye" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <svg id="icon-eye-off" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+            <line x1="1" y1="1" x2="23" y2="23"></line>
+          </svg>
+        </button>
+      </div>
+      <hr class="card-divider">
+      <div class="profile-details hide-values" id="native-student-info">
+        <div style="width: 100%; display: flex; justify-content: center; align-items: center; height: 130px; font-weight: 600; font-size: 15px; color: #ffffff;">
+          Chưa có dữ liệu hiển thị
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="native-card progress-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 5px; height: 28px;">
+          <h3 class="card-title" style="margin: 0; text-align: left; padding: 0;">TIẾN ĐỘ HỌC TẬP</h3>
+        </div>
+        <hr class="card-divider">
+        <div style="flex: 1; position: relative; min-height: 0; width: 100%; display: flex; justify-content: center; align-items: center;">
+           <canvas id="progress-chart"></canvas>
+           <div id="progress-text-center" style="position: absolute; pointer-events: none; text-align: center; display: flex; flex-direction: column; justify-content: center; margin-top: -35px;">
+              <span id="progress-text-accum" style="font-size: 28px; font-weight: 700; color: #ffffff; line-height: 1;">0</span>
+              <span id="progress-text-total" style="font-size: 14px; color: #9ca3af; line-height: 1; margin-top: 4px;">/ 0</span>
+           </div>
+        </div>
+      </div>
+      <div class="native-card results-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 5px; height: 28px;">
+          <h3 class="card-title" style="margin: 0; text-align: left; padding: 0;">KẾT QUẢ HỌC TẬP</h3>
+          <div class="custom-select-wrapper" id="custom-semester-wrapper">
+             <select id="semester-select" class="native-select" style="display: none;"></select>
+             <div class="custom-select-trigger" id="custom-semester-trigger">
+                <span id="custom-semester-label">Chọn học kỳ</span>
+             </div>
+             <div class="custom-options" id="custom-semester-options"></div>
+          </div>
+        </div>
+        <hr class="card-divider">
+        <div style="flex: 1; position: relative; min-height: 0; width: 100%; display: flex; justify-content: center; align-items: center;" id="results-chart-container">
+           <canvas id="results-chart" style="filter: blur(8px); opacity: 0.5; pointer-events: none;"></canvas>
+           <div id="chart-overlay-text" style="position: absolute; font-weight: 500; color: var(--text-primary); font-size: 16px; pointer-events: none; text-shadow: 0 0 10px rgba(0,0,0,0.5);">Chưa có dữ liệu hiển thị</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Native UI: Timetable -->
+  <div id="native-timetable" class="native-container hidden">
+    <div class="native-card timetable-card">
+
+      <div class="timetable-toolbar">
+        <div class="tt-filter-group">
+          <label class="tt-radio-lbl"><input type="radio" name="nativeRdoLoaiLich" value="0" checked> Tất cả</label>
+          <label class="tt-radio-lbl"><input type="radio" name="nativeRdoLoaiLich" value="1"> Lịch học</label>
+          <label class="tt-radio-lbl"><input type="radio" name="nativeRdoLoaiLich" value="2"> Lịch thi</label>
+        </div>
+        <div class="tt-nav-group">
+          <button class="tt-btn" style="position: relative; overflow: hidden; padding: 6px 10px; display: flex; align-items: center; gap: 8px;">
+            <span id="custom-date-text" style="font-size: 14px; font-weight: 500; letter-spacing: 0.5px;">--/--/----</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <input type="text" id="nativeDateNgayXemLich" class="tt-date-input-hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; padding: 0; margin: 0; border: none; box-sizing: border-box;">
+          </button>
+          <button id="nativeBtnHienTai" class="tt-action-btn" title="Hôm nay">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+          <button id="nativeBtnTroVe" class="tt-action-btn" title="Trở về">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <button id="nativeBtnTiep" class="tt-action-btn" title="Tiếp">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+      </div>
+      <div id="timetable-grid-content" class="timetable-body">
+        <div style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-weight: 600; font-size: 15px; color: #ffffff;">
+          Chưa có dữ liệu hiển thị
+        </div>
+      </div>
+      
+      <div class="tt-legend">
+        <div class="tt-legend-item"><div class="tt-legend-color" style="background: #a1a1aa; border-left: 2px solid #71717a;"></div>Lịch học lý thuyết</div>
+        <div class="tt-legend-item"><div class="tt-legend-color" style="background: rgba(115,158,59,0.85); border-left: 2px solid #8DC049;"></div>Lịch học thực hành</div>
+        <div class="tt-legend-item"><div class="tt-legend-color" style="background: rgba(0,102,153,0.85); border-left: 2px solid #1E8CDA;"></div>Lịch học trực tuyến</div>
+        <div class="tt-legend-item"><div class="tt-legend-color" style="background: rgba(127,127,0,0.85); border-left: 2px solid #A2A200;"></div>Lịch thi</div>
+        <div class="tt-legend-item"><div class="tt-legend-color" style="background: rgba(178,34,34,0.85); border-left: 2px solid #E63932;"></div>Lịch tạm ngưng</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://npmcdn.com/flatpickr/dist/l10n/vn.js"></script>
+  <script src="renderer.js?v=14"></script>
+</body>
+</html>

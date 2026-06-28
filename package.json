@@ -1,0 +1,24 @@
+{
+  "name": "thoi-khoa-bieu-huit",
+  "version": "1.0.0",
+  "description": "App xem Thời khóa biểu Đại học Công Thương (HUIT)",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "author": "HUIT Student",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^35.7.5",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId": "com.huit.timetable",
+    "productName": "Thời Khóa Biểu HUIT",
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    }
+  }
+}
